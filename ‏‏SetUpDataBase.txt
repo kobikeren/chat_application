@@ -1,0 +1,154 @@
+STEP 1 : execute the sql script, in Microsoft SQL Server
+STEP 2 : in App.config file (in ServerPL project), insert the connection string
+
+
+---------------------------------------------------------------------------------------------
+------------------------------------------ SQL --------------------------------------------
+---------------------------------------------------------------------------------------------
+
+create database dbChatApplication
+go
+
+use dbChatApplication
+go
+
+create table tblClients
+(
+	Id int primary key identity,
+	Name nvarchar(50),
+	UserName nvarchar(50),
+	LastConnectionDate nvarchar(50),
+	IsConnected nvarchar(50)
+)
+go
+
+create table tblMessages
+(
+	Id int primary key identity,
+	MessageText nvarchar(50),
+	UserId int,
+	SentDate nvarchar(50),
+	RecipientId int,
+	Category nvarchar(50)
+)
+go
+
+create procedure spUpdateDisconnected
+@UserName nvarchar(50)
+as
+begin
+	update tblClients set IsConnected = 'No'
+	where UserName = @UserName
+end
+go
+
+create procedure spUpdateConnected
+@UserName nvarchar(50),
+@LastConnectionDate nvarchar(50)
+as
+begin
+	update tblClients set LastConnectionDate = @LastConnectionDate,
+	IsConnected = 'Yes'
+	where UserName = @UserName
+end
+go
+
+create procedure spInsertClient
+@Name nvarchar(50),
+@UserName nvarchar(50),
+@LastConnectionDate nvarchar(50)
+as
+begin
+	insert into tblClients values (@Name, @UserName, @LastConnectionDate, 'Yes')
+end
+go
+
+create procedure spInsertMessage
+@MessageText nvarchar(50),
+@UserId int,
+@SentDate nvarchar(50),
+@RecipientId int,
+@Category nvarchar(50)
+as
+begin
+	insert into tblMessages values 
+	(@MessageText, @UserId, @SentDate, @RecipientId, @Category)
+end
+go
+
+create procedure spDeleteClient
+@Id int
+as
+begin
+	delete from tblClients
+	where Id = @Id
+end
+go
+
+create procedure spGetClientIdByUserName
+@UserName nvarchar(50)
+as
+begin
+	select Id from tblClients
+	where UserName = @UserName
+end
+go
+
+create procedure spGetUserNameByUserName
+@UserName nvarchar(50)
+as
+begin
+	select UserName from tblClients
+	where UserName = @UserName
+end
+go
+
+create procedure spGetAllMessages
+as
+begin
+	select * from tblMessages
+end
+go
+
+create procedure spGetAllClients
+as
+begin
+	select * from tblClients
+end
+go
+
+create procedure spGetMessagesByWord
+@Word nvarchar(50)
+as
+begin
+	select * from tblMessages
+	where MessageText like '%' + @Word + '%'
+end
+go
+
+create procedure spGetClientById
+@Id int
+as
+begin
+	select * from tblClients
+	where Id = @Id
+end
+go
+
+create procedure spGetMessagesByDate
+@SentDate nvarchar(50)
+as
+begin
+	select * from tblMessages
+	where SentDate = @SentDate
+end
+go
+
+create procedure spGetClientByUserName
+@UserName nvarchar(50)
+as
+begin
+	select * from tblClients
+	where UserName = @UserName
+end
+go
